@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebuttal Graph</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161a21; --panel2:#1b2029; --line:#272d38;
+    --ink:#e7ebf0; --muted:#8b95a6; --faint:#5b6472;
+    --a:#6ea8fe; --b:#c58af9; --accent:#f0b429; --ok:#4ade80;
+    --claim:#f87171; --premise:#e3a857; --evidence:#5fd0a6; --inference:#7fb3d5; --counter:#c58af9; --nli:#8b95a6;
+    --mono:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px}
+  .wrap{display:grid;grid-template-columns:1fr 360px;gap:0;height:100vh}
+  .graphpane{overflow:auto;padding:8px}
+  .side{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:18px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:0 0 12px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);font-size:12px;color:var(--muted);align-items:center}
+  .legend .item{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:16px;height:3px;border-radius:2px}
+  .legend .note{margin-left:auto;color:var(--faint)}
+
+  svg{display:block}
+  .node rect{stroke:var(--line);stroke-width:1.5;rx:9}
+  .node.a rect{fill:#182233}
+  .node.b rect{fill:#231a2e}
+  .node.opener rect{stroke-dasharray:4 3;opacity:.85}
+  .node text{font-family:var(--mono);font-size:12px}
+  .node .who{font-size:10px;fill:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+  .node .lbl{fill:var(--ink);font-weight:600}
+  .node .sub{fill:var(--muted);font-size:10px}
+  .node.unanswered rect{stroke:var(--ok)}
+  .node:hover rect{stroke:var(--accent)}
+  .node{cursor:pointer}
+
+  path.edge{fill:none;cursor:pointer;opacity:.75;transition:opacity .12s}
+  path.edge:hover{opacity:1}
+  path.edge.sel{opacity:1}
+  path.edge.dim{opacity:.12}
+  .edgehit{fill:none;stroke:transparent;stroke-width:14;cursor:pointer}
+  marker path{fill:context-stroke}
+
+  .empty{color:var(--faint);font-size:13px;line-height:1.6}
+  .detail .row{margin-bottom:12px}
+  .detail .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:3px}
+  .detail .v{color:var(--ink);line-height:1.5}
+  .detail .sent{background:var(--panel2);border-left:3px solid var(--accent);padding:8px 10px;border-radius:4px;font-family:var(--mono);font-size:12.5px}
+  .detail .tgt{background:var(--panel2);border-left:3px solid var(--claim);padding:8px 10px;border-radius:4px;font-family:var(--mono);font-size:12.5px}
+  .chip{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-family:var(--mono);color:#0d0f13;font-weight:700}
+  .bar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:4px}
+  .bar span{display:block;height:100%;background:linear-gradient(90deg,#f0c27e,#e3a857)}
+  .spk{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .spk .n{font-family:var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="graphpane">
+    <div class="legend" id="legend"></div>
+    <div id="graph"></div>
+  </div>
+  <div class="side">
+    <h2>Detail</h2>
+    <div id="detail" class="detail"><div class="empty">Click a rebuttal edge (or a turn) to inspect which sentence attacked which point.</div></div>
+    <h2 style="margin-top:26px">Per-speaker</h2>
+    <div id="speakers"></div>
+  </div>
+</div>
+
+<script>
+const ATTACK_COLORS = {
+  rebuttal:"var(--claim)", undermining:"var(--premise)",
+  undercut:"var(--inference)", nli_contradiction:"var(--nli)"
+};
+const ATTACK_LABEL = {
+  rebuttal:"rebuttal", undermining:"undermining",
+  undercut:"undercut", nli_contradiction:"NLI contradiction"
+};
+
+// Build turn nodes from the rebuttal result. We need every turn that appears
+// either as a source OR a target, plus (ideally) the caller passes the turns.
+function renderRebuttalGraph(result, turns){
+  const graph = document.getElementById("graph");
+  const rebuttals = result.rebuttals || [];
+
+  // ---- collect turns ----
+  let turnMap = new Map();
+  if (turns && turns.length){
+    turns.forEach(t => turnMap.set(t.turn_no, {turn:t.turn_no, speaker:t.speaker, text:t.text||"", claim:t.claim||""}));
+  }
+  // ensure any turn referenced by an edge exists
+  rebuttals.forEach(rb => {
+    for (const side of [rb.from, rb.target]){
+      const tn = side.turn;
+      if(!turnMap.has(tn)) turnMap.set(tn, {turn:tn, speaker:side.speaker, text:"", claim:""});
+    }
+  });
+  const allTurns = [...turnMap.values()].sort((x,y)=>x.turn-y.turn);
+  if(!allTurns.length){ graph.innerHTML='<div class="empty" style="padding:24px">No turns to display.</div>'; return; }
+
+  // speaker columns (max 2 speakers side by side; extra speakers get their own column)
+  const speakers = [...new Set(allTurns.map(t=>t.speaker))];
+  const colX = {}; speakers.forEach((s,i)=> colX[s] = 120 + i*300);
+  const W = 120 + speakers.length*300 + 60;
+
+  // opener = each speaker's earliest turn
+  const openerOf = {};
+  allTurns.forEach(t => { if(!(t.speaker in openerOf)) openerOf[t.speaker] = t.turn; });
+
+  // vertical position by turn order
+  const rowY = {}; allTurns.forEach((t,i)=> rowY[t.turn] = 70 + i*92);
+  const H = 70 + allTurns.length*92 + 40;
+  const NW=210, NH=58;
+
+  // which turns were ever a target (answered) and which targets never hit
+  const wasTarget = new Set(rebuttals.map(rb=>rb.target.turn));
+
+  const SVGNS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("width",W); svg.setAttribute("height",H); svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+
+  // arrow markers per color
+  const defs=document.createElementNS(SVGNS,"defs");
+  Object.entries(ATTACK_COLORS).forEach(([k,c])=>{
+    const m=document.createElementNS(SVGNS,"marker");
+    m.setAttribute("id","ar--"+k); m.setAttribute("viewBox","0 0 10 10");
+    m.setAttribute("refX","9"); m.setAttribute("refY","5"); m.setAttribute("markerWidth","7");
+    m.setAttribute("markerHeight","7"); m.setAttribute("orient","auto-start-reverse");
+    const p=document.createElementNS(SVGNS,"path"); p.setAttribute("d","M0,0 L10,5 L0,10 z");
+    p.setAttribute("fill",c); m.appendChild(p); defs.appendChild(m);
+  });
+  svg.appendChild(defs);
+
+  const edgesG=document.createElementNS(SVGNS,"g");
+  const nodesG=document.createElementNS(SVGNS,"g");
+  svg.appendChild(edgesG); svg.appendChild(nodesG);
+
+  // node anchor points
+  function nodeBox(tn){ const t=turnMap.get(tn); const x=colX[t.speaker]; const y=rowY[tn]; return {x,y,cx:x+NW/2,cy:y+NH/2,left:x,right:x+NW,top:y,bottom:y+NH,t}; }
+
+  // ---- edges ----
+  const edgeEls=[];
+  rebuttals.forEach((rb,i)=>{
+    const a=nodeBox(rb.from.turn), b=nodeBox(rb.target.turn);
+    // start at source node side facing target, end at target side
+    const sameCol = a.t.speaker===b.t.speaker;
+    let x1,x2,y1=a.cy,y2=b.cy;
+    if(sameCol){ x1=a.right; x2=b.right; } // loop out the right side
+    else if(colX[a.t.speaker] < colX[b.t.speaker]){ x1=a.right; x2=b.left; }
+    else { x1=a.left; x2=b.right; }
+    const midx = sameCol ? Math.max(x1,x2)+50+((rb.from.turn%3)*18) : (x1+x2)/2;
+    const col = ATTACK_COLORS[rb.attack_type]||"var(--nli)";
+    const w = 1.5 + (rb.effectiveness||0)*6;   // thickness = effectiveness
+    const d = `M ${x1} ${y1} C ${midx} ${y1}, ${midx} ${y2}, ${x2} ${y2}`;
+
+    const path=document.createElementNS(SVGNS,"path");
+    path.setAttribute("class","edge"); path.setAttribute("d",d);
+    path.setAttribute("stroke",col); path.setAttribute("stroke-width",w);
+    path.setAttribute("marker-end","url(#ar--"+(rb.attack_type in ATTACK_COLORS?rb.attack_type:"nli_contradiction")+")");
+    const hit=document.createElementNS(SVGNS,"path"); hit.setAttribute("class","edgehit"); hit.setAttribute("d",d);
+    hit.addEventListener("click",()=>selectEdge(i));
+    path.addEventListener("click",()=>selectEdge(i));
+    edgesG.appendChild(path); edgesG.appendChild(hit);
+    edgeEls.push({path,rb,i});
+  });
+
+  // ---- nodes ----
+  allTurns.forEach(t=>{
+    const {x,y}=nodeBox(t.turn);
+    const g=document.createElementNS(SVGNS,"g");
+    const isOpener = openerOf[t.speaker]===t.turn;
+    const unanswered = !wasTarget.has(t.turn) && !isOpener && t.claim; // a real point nobody hit
+    g.setAttribute("class",`node ${t.speaker===speakers[0]?"a":"b"}${isOpener?" opener":""}${unanswered?" unanswered":""}`);
+    const rect=document.createElementNS(SVGNS,"rect");
+    rect.setAttribute("x",x); rect.setAttribute("y",y); rect.setAttribute("width",NW); rect.setAttribute("height",NH); rect.setAttribute("rx",9);
+    g.appendChild(rect);
+    const who=document.createElementNS(SVGNS,"text"); who.setAttribute("class","who"); who.setAttribute("x",x+12); who.setAttribute("y",y+16);
+    who.textContent=`Turn ${t.turn} · ${t.speaker}` + (isOpener?" · opener":""); g.appendChild(who);
+    const lbl=document.createElementNS(SVGNS,"text"); lbl.setAttribute("class","lbl"); lbl.setAttribute("x",x+12); lbl.setAttribute("y",y+34);
+    lbl.textContent=clip(t.claim||t.text||"(no claim)",26); g.appendChild(lbl);
+    if(unanswered){
+      const s=document.createElementNS(SVGNS,"text"); s.setAttribute("class","sub"); s.setAttribute("x",x+12); s.setAttribute("y",y+49);
+      s.textContent="↳ never rebutted"; s.setAttribute("fill","var(--ok)"); g.appendChild(s);
+    }
+    g.addEventListener("click",()=>selectNode(t.turn));
+    nodesG.appendChild(g);
+  });
+
+  graph.innerHTML=""; graph.appendChild(svg);
+
+  // ---- interactions ----
+  function selectEdge(i){
+    edgeEls.forEach(e=>{ e.path.classList.toggle("sel",e.i===i); e.path.classList.toggle("dim",e.i!==i); });
+    showEdgeDetail(rebuttals[i]);
+  }
+  function selectNode(tn){
+    const rel = rebuttals.map((rb,i)=>({rb,i})).filter(({rb})=>rb.from.turn===tn||rb.target.turn===tn);
+    const relIdx=new Set(rel.map(r=>r.i));
+    edgeEls.forEach(e=>{ e.path.classList.toggle("sel",relIdx.has(e.i)); e.path.classList.toggle("dim",!relIdx.has(e.i)); });
+    showNodeDetail(tn, rel.map(r=>r.rb));
+  }
+  window.__clearSel=()=>edgeEls.forEach(e=>{e.path.classList.remove("sel","dim");});
+
+  // legend + speakers
+  buildLegend();
+  buildSpeakers(result.by_speaker||{});
+}
+
+function clip(s,n){ s=(s||"").replace(/\s+/g," ").trim(); return s.length>n?s.slice(0,n-1)+"…":s; }
+
+function showEdgeDetail(rb){
+  const col=ATTACK_COLORS[rb.attack_type]||"var(--nli)";
+  document.getElementById("detail").innerHTML=`
+    <div class="row"><div class="k">Rebuttal</div>
+      <div class="v">Turn ${rb.from.turn} (${rb.from.speaker}) → Turn ${rb.target.turn} (${rb.target.speaker})</div></div>
+    <div class="row"><div class="k">Rebutting sentence</div>
+      <div class="sent">${esc(rb.from.sentence)}</div></div>
+    <div class="row"><div class="k">Target (${rb.target.kind})</div>
+      <div class="tgt" style="border-left-color:${col}">${esc(rb.target.text)}</div></div>
+    <div class="row"><div class="k">Attack type</div>
+      <div><span class="chip" style="background:${col}">${ATTACK_LABEL[rb.attack_type]||rb.attack_type}</span>
+      <span style="color:var(--faint);font-size:11px;margin-left:8px">${rb.source||""}</span></div></div>
+    ${rb.rationale?`<div class="row"><div class="k">Rationale</div><div class="v">${esc(rb.rationale)}</div></div>`:""}
+    <div class="row"><div class="k">Effectiveness ${(rb.effectiveness??0).toFixed(2)} (${rb.label||""})</div>
+      <div class="bar"><span style="width:${Math.round((rb.effectiveness||0)*100)}%"></span></div>
+      <div class="v" style="font-size:11px;color:var(--muted);margin-top:6px">
+        Effectiveness is scored from 1 (bare disagreement) to 3 (substantive reasoning or evidence).</div></div>`;
+}
+function showNodeDetail(tn, list){
+  if(!list.length){ document.getElementById("detail").innerHTML=`<div class="empty">Turn ${tn}: no rebuttals in or out.</div>`; return; }
+  const rows=list.map(rb=>{
+    const col=ATTACK_COLORS[rb.attack_type]||"var(--nli)"; const dir=rb.from.turn===tn?"→ attacks":"← attacked by";
+    const other=rb.from.turn===tn?`Turn ${rb.target.turn}`:`Turn ${rb.from.turn}`;
+    return `<div class="row"><div class="v"><span class="chip" style="background:${col};font-size:10px">${ATTACK_LABEL[rb.attack_type]||rb.attack_type}</span>
+      ${dir} ${other} · eff ${(rb.effectiveness??0).toFixed(2)}</div>
+      <div class="sent" style="margin-top:6px">${esc(rb.from.turn===tn?rb.from.sentence:rb.target.text)}</div></div>`;
+  }).join("");
+  document.getElementById("detail").innerHTML=`<div class="row"><div class="k">Turn ${tn} — ${list.length} link(s)</div></div>${rows}`;
+}
+function buildLegend(){
+  const el=document.getElementById("legend");
+  el.innerHTML = Object.entries(ATTACK_LABEL).map(([k,l])=>
+    `<span class="item"><span class="sw" style="background:${ATTACK_COLORS[k]}"></span>${l}</span>`).join("")
+    + `<span class="note">edge thickness = effectiveness · dashed node = opener · green outline = never rebutted</span>`;
+}
+function buildSpeakers(bs){
+  const el=document.getElementById("speakers");
+  const ks=Object.keys(bs);
+  if(!ks.length){ el.innerHTML='<div class="empty">No rebuttals scored.</div>'; return; }
+  el.innerHTML=ks.map(s=>`<div class="spk"><span>${s}</span>
+    <span class="n">${(bs[s].mean_effectiveness??0).toFixed(2)} · ${bs[s].rebuttals_made||0} rebuttals</span></div>`).join("");
+}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// ---- demo data for standalone preview ----
+if(!window.__EMBEDDED__){
+  const demo={
+    by_speaker:{A:{mean_effectiveness:null,rebuttals_made:0}, B:{mean_effectiveness:2.5,rebuttals_made:2}},
+    rebuttals:[
+      {from:{turn:4,speaker:"B",sentence:"Money does not buy happiness."},
+       target:{turn:1,speaker:"A",kind:"claim",text:"Money buys happiness"},
+       attack_type:"rebuttal",effectiveness:1,label:"low",rationale:"It directly denies the opponent's conclusion.",source:"llm"},
+      {from:{turn:4,speaker:"B",sentence:"Security does not reduce anxiety for the chronically anxious."},
+       target:{turn:1,speaker:"A",kind:"premise",text:"Security reduces anxiety"},
+       attack_type:"undermining",effectiveness:3,label:"high",rationale:"It challenges the premise with a specific counter-case.",source:"llm"},
+      {from:{turn:6,speaker:"B",sentence:"Even if income helps, meaning matters more."},
+       target:{turn:3,speaker:"A",kind:"claim",text:"Higher income lowers stress"},
+       attack_type:"undercut",effectiveness:3,label:"high",rationale:"It accepts the premise but rejects the inference to happiness.",source:"llm"}
+    ]
+  };
+  const demoTurns=[
+    {turn_no:1,speaker:"A",claim:"Money buys happiness",text:"Money buys happiness because security reduces anxiety."},
+    {turn_no:2,speaker:"B",claim:"Money is not everything",text:"Money is not the only thing that matters."},
+    {turn_no:3,speaker:"A",claim:"Higher income lowers stress",text:"Higher income measurably lowers stress."},
+    {turn_no:4,speaker:"B",claim:"Wealth can harm",text:"Money does not buy happiness. Security does not reduce anxiety for the chronically anxious."},
+    {turn_no:5,speaker:"A",claim:"Access to healthcare",text:"Money also buys better healthcare access, which is never disputed."},
+    {turn_no:6,speaker:"B",claim:"Meaning matters",text:"Even if income helps, meaning matters more."}
+  ];
+  renderRebuttalGraph(demo, demoTurns);
+}
+</script>
+</body>
+</html>

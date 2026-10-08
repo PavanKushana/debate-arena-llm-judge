@@ -1,0 +1,583 @@
+Governments should impose a tax on sugary and unhealthy foods.
+
+turn 1
+
+stance support
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs. Sugary and unhealthy foods contribute to a myriad of health issues, including obesity, diabetes, heart disease, and tooth decay. By placing a tax on these items, governments can deter individuals from purchasing them frequently, encouraging healthier dietary choices. This approach not only addresses the immediate health risks associated with these foods but also shifts societal norms towards more health-conscious behaviors. Additionally, the revenue generated from these taxes can be redirected towards funding public health initiatives, education programs, and other community health services. This not only enhances the overall health of the population but also provides a sustainable source of funding for",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9724,
+  "net_stance": 0.9669,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.9724,
+    "neutral": 0.0221,
+    "contradiction": 0.0055
+  }
+}
+
+stance support — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs. Sugary and unhealthy foods contribute to a myriad of health issues, including obesity, diabetes, heart disease, and tooth decay. By placing a tax on these items, governments can deter individuals from purchasing them frequently, encouraging healthier dietary choices. This approach not only addresses the immediate health risks associated with these foods but also shifts societal norms towards more health-conscious behaviors. Additionally, the revenue generated from these taxes can be redirected towards funding public health initiatives, education programs, and other community health services.",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9816,
+  "net_stance": 0.9779,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.9816,
+    "neutral": 0.0147,
+    "contradiction": 0.0037
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs. Sugary and unhealthy foods contribute to a myriad of health issues, including obesity, diabetes, heart disease, and tooth decay. By placing a tax on these items, governments can deter individuals from purchasing them frequently, encouraging healthier dietary choices. This approach not only addresses the immediate health risks associated with these foods but also shifts societal norms towards more health-conscious behaviors. Additionally, the revenue generated from these taxes can be redirected towards funding public health initiatives, education programs, and other community health services. This not only enhances the overall health of the population but also provides a sustainable source of funding for",
+  "stance": "PRO",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.9724,
+  "net_stance": 0.968,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.9724,
+  "con_score": 0.0044,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.9724,
+    "neutral": 0.0221,
+    "contradiction": 0.0055
+  },
+  "con_probs": {
+    "entailment": 0.0044,
+    "neutral": 0.0035,
+    "contradiction": 0.9921
+  }
+}
+
+stance support dual — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs. Sugary and unhealthy foods contribute to a myriad of health issues, including obesity, diabetes, heart disease, and tooth decay. By placing a tax on these items, governments can deter individuals from purchasing them frequently, encouraging healthier dietary choices. This approach not only addresses the immediate health risks associated with these foods but also shifts societal norms towards more health-conscious behaviors. Additionally, the revenue generated from these taxes can be redirected towards funding public health initiatives, education programs, and other community health services.",
+  "stance": "PRO",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.9816,
+  "net_stance": 0.9784,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.9816,
+  "con_score": 0.0032,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.9816,
+    "neutral": 0.0147,
+    "contradiction": 0.0037
+  },
+  "con_probs": {
+    "entailment": 0.0032,
+    "neutral": 0.0024,
+    "contradiction": 0.9944
+  }
+}
+
+logical cogency
+
+{
+  "claim": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs.",
+  "premises": [
+    "Such a measure would significantly reduce the consumption of these products.",
+    "Such a measure would promote public health.",
+    "Such a measure would lower healthcare costs."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "gemma4:26b"
+}
+
+{
+  "cogency_score": 0.9548,
+  "label": "HIGH",
+  "acceptability": 0.9821,
+  "relevance": 0.9568,
+  "sufficiency": 0.9412,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9412,
+    "neutral": 0.0526,
+    "contradiction": 0.0062
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+turn 2
+
+stance support
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I acknowledge the potential benefits of reducing the consumption of sugary and unhealthy foods, imposing a tax on these items is not the most effective or equitable solution. First, such a tax could disproportionately affect low-income individuals who rely more heavily on these foods for their diet, potentially exacerbating health disparities rather than addressing them. Second, the behavior of individuals is complex, and taxes alone may not be sufficient to change eating habits. Education and access to healthier alternatives are equally important. Third, focusing solely on taxation might neglect other critical factors contributing to poor dietary choices, such as the lack of affordable, healthy food options in certain communities. Lastly, the revenue generated from such taxes might be better utilized in direct, targeted health interventions rather than relying on a punitive",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.8955,
+  "net_stance": 0.8537,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.0418,
+    "neutral": 0.0627,
+    "contradiction": 0.8955
+  }
+}
+
+stance support — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I acknowledge the potential benefits of reducing the consumption of sugary and unhealthy foods, imposing a tax on these items is not the most effective or equitable solution. First, such a tax could disproportionately affect low-income individuals who rely more heavily on these foods for their diet, potentially exacerbating health disparities rather than addressing them. Second, the behavior of individuals is complex, and taxes alone may not be sufficient to change eating habits. Education and access to healthier alternatives are equally important. Third, focusing solely on taxation might neglect other critical factors contributing to poor dietary choices, such as the lack of affordable, healthy food options in certain communities.",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9182,
+  "net_stance": 0.8886,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.0296,
+    "neutral": 0.0522,
+    "contradiction": 0.9182
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I acknowledge the potential benefits of reducing the consumption of sugary and unhealthy foods, imposing a tax on these items is not the most effective or equitable solution. First, such a tax could disproportionately affect low-income individuals who rely more heavily on these foods for their diet, potentially exacerbating health disparities rather than addressing them. Second, the behavior of individuals is complex, and taxes alone may not be sufficient to change eating habits. Education and access to healthier alternatives are equally important. Third, focusing solely on taxation might neglect other critical factors contributing to poor dietary choices, such as the lack of affordable, healthy food options in certain communities. Lastly, the revenue generated from such taxes might be better utilized in direct, targeted health interventions rather than relying on a punitive",
+  "stance": "CON",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.9642,
+  "net_stance": 0.9224,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.0418,
+  "con_score": 0.9642,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.0418,
+    "neutral": 0.0627,
+    "contradiction": 0.8955
+  },
+  "con_probs": {
+    "entailment": 0.9642,
+    "neutral": 0.0281,
+    "contradiction": 0.0077
+  }
+}
+
+stance support dual — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I acknowledge the potential benefits of reducing the consumption of sugary and unhealthy foods, imposing a tax on these items is not the most effective or equitable solution. First, such a tax could disproportionately affect low-income individuals who rely more heavily on these foods for their diet, potentially exacerbating health disparities rather than addressing them. Second, the behavior of individuals is complex, and taxes alone may not be sufficient to change eating habits. Education and access to healthier alternatives are equally important. Third, focusing solely on taxation might neglect other critical factors contributing to poor dietary choices, such as the lack of affordable, healthy food options in certain communities.",
+  "stance": "CON",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.9728,
+  "net_stance": 0.9432,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.0296,
+  "con_score": 0.9728,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.0296,
+    "neutral": 0.0522,
+    "contradiction": 0.9182
+  },
+  "con_probs": {
+    "entailment": 0.9728,
+    "neutral": 0.0205,
+    "contradiction": 0.0067
+  }
+}
+
+logical cogency
+
+{
+  "claim": "Imposing a tax on sugary and unhealthy foods is not the most effective or equitable solution.",
+  "premises": [
+    "Such a tax could disproportionately affect low-income individuals who rely more heavily on these foods for their diet, potentially exacerbating health disparities rather than addressing them.",
+    "The behavior of individuals is complex, and taxes alone may not be sufficient to change eating habits.",
+    "Focusing solely on taxation might neglect other critical factors contributing to poor dietary choices, such as the lack of affordable, healthy food options in certain communities.",
+    "The revenue generated from such taxes might be better utilized in direct, targeted health interventions rather than relying on a punitive approach."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "gemma4:26b"
+}
+
+{
+  "cogency_score": 0.9603,
+  "label": "HIGH",
+  "acceptability": 0.9745,
+  "relevance": 0.9632,
+  "sufficiency": 0.9517,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9517,
+    "neutral": 0.0412,
+    "contradiction": 0.0071
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+turn 3
+
+stance support
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Addressing the concern about the tax disproportionately affecting low-income individuals, it's essential to design the tax system to mitigate these impacts. For instance, implementing a sliding scale based on income or providing tax rebates for low-income families could ensure that the burden is distributed more equitably. Moreover, the revenue generated from these taxes can fund subsidies for healthier food options, making them more accessible to those who need them most. This dual approach of taxing unhealthy foods and subsidizing healthier alternatives can create a more balanced and inclusive health policy.\n\nFurthermore, while education and access to healthier options are crucial, they often take time to show significant results. In the meantime, a tax can serve as a rapid intervention to reduce the immediate health risks associated with overconsumption of",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.8846,
+  "net_stance": 0.871,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.8846,
+    "neutral": 0.1018,
+    "contradiction": 0.0136
+  }
+}
+
+stance support — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Addressing the concern about the tax disproportionately affecting low-income individuals, it's essential to design the tax system to mitigate these impacts. For instance, implementing a sliding scale based on income or providing tax rebates for low-income families could ensure that the burden is distributed more equitably. Moreover, the revenue generated from these taxes can fund subsidies for healthier food options, making them more accessible to those who need them most. This dual approach of taxing unhealthy foods and subsidizing healthier alternatives can create a more balanced and inclusive health policy.\n\nFurthermore, while education and access to healthier options are crucial, they often take time to show significant results.",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9073,
+  "net_stance": 0.8958,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.9073,
+    "neutral": 0.0812,
+    "contradiction": 0.0115
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Addressing the concern about the tax disproportionately affecting low-income individuals, it's essential to design the tax system to mitigate these impacts. For instance, implementing a sliding scale based on income or providing tax rebates for low-income families could ensure that the burden is distributed more equitably. Moreover, the revenue generated from these taxes can fund subsidies for healthier food options, making them more accessible to those who need them most. This dual approach of taxing unhealthy foods and subsidizing healthier alternatives can create a more balanced and inclusive health policy.\n\nFurthermore, while education and access to healthier options are crucial, they often take time to show significant results. In the meantime, a tax can serve as a rapid intervention to reduce the immediate health risks associated with overconsumption of",
+  "stance": "PRO",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.8846,
+  "net_stance": 0.8628,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.8846,
+  "con_score": 0.0218,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.8846,
+    "neutral": 0.1018,
+    "contradiction": 0.0136
+  },
+  "con_probs": {
+    "entailment": 0.0218,
+    "neutral": 0.0326,
+    "contradiction": 0.9456
+  }
+}
+
+stance support dual — incomplete ending removed
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "Addressing the concern about the tax disproportionately affecting low-income individuals, it's essential to design the tax system to mitigate these impacts. For instance, implementing a sliding scale based on income or providing tax rebates for low-income families could ensure that the burden is distributed more equitably. Moreover, the revenue generated from these taxes can fund subsidies for healthier food options, making them more accessible to those who need them most. This dual approach of taxing unhealthy foods and subsidizing healthier alternatives can create a more balanced and inclusive health policy.\n\nFurthermore, while education and access to healthier options are crucial, they often take time to show significant results.",
+  "stance": "PRO",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.9073,
+  "net_stance": 0.8904,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.9073,
+  "con_score": 0.0169,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.9073,
+    "neutral": 0.0812,
+    "contradiction": 0.0115
+  },
+  "con_probs": {
+    "entailment": 0.0169,
+    "neutral": 0.0217,
+    "contradiction": 0.9614
+  }
+}
+
+logical cogency
+
+{
+  "claim": "A tax on sugary and unhealthy foods can be designed to mitigate its impact on low-income individuals and can be used to fund subsidies for healthier food options, creating a more balanced and inclusive health policy.",
+  "premises": [
+    "Implementing a sliding scale based on income or providing tax rebates for low-income families could ensure that the burden is distributed more equitably.",
+    "The revenue generated from these taxes can fund subsidies for healthier food options, making them more accessible to those who need them most."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "gemma4:26b"
+}
+
+{
+  "cogency_score": 0.9843,
+  "label": "HIGH",
+  "acceptability": 0.9887,
+  "relevance": 0.9794,
+  "sufficiency": 0.9861,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9861,
+    "neutral": 0.0104,
+    "contradiction": 0.0035
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+turn 4
+
+stance support
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I understand the concern about equitable distribution, focusing solely on taxation as a rapid intervention can be overly simplistic. Taxation often does not account for the underlying socioeconomic factors that lead to poor dietary choices. For example, low-income communities may still face limited access to supermarkets and fresh produce, regardless of a tax. Instead, a multi-faceted approach that includes taxation, education, and improved access to healthy food options is more effective. Taxation without addressing the root causes of unhealthy eating habits may not lead to long-term behavioral change. Additionally, the revenue generated should be directed towards comprehensive health initiatives that tackle these underlying issues, such as improving food security and nutrition education, rather than relying on a punitive measure that could stigmatize certain communities.",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.2432,
+  "net_stance": 0.135,
+  "label": "LOW",
+  "off_topic": true,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "probs": {
+    "entailment": 0.1082,
+    "neutral": 0.6486,
+    "contradiction": 0.2432
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Governments should impose a tax on sugary and unhealthy foods.",
+  "turn": "While I understand the concern about equitable distribution, focusing solely on taxation as a rapid intervention can be overly simplistic. Taxation often does not account for the underlying socioeconomic factors that lead to poor dietary choices. For example, low-income communities may still face limited access to supermarkets and fresh produce, regardless of a tax. Instead, a multi-faceted approach that includes taxation, education, and improved access to healthy food options is more effective. Taxation without addressing the root causes of unhealthy eating habits may not lead to long-term behavioral change. Additionally, the revenue generated should be directed towards comprehensive health initiatives that tackle these underlying issues, such as improving food security and nutrition education, rather than relying on a punitive measure that could stigmatize certain communities.",
+  "stance": "CON",
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods."
+}
+
+{
+  "stance_support_score": 0.5416,
+  "net_stance": 0.4334,
+  "label": "LOW",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.1082,
+  "con_score": 0.5416,
+  "pro_hypothesis": "Governments should impose a tax on sugary and unhealthy foods.",
+  "con_hypothesis": "Governments should not impose a tax on sugary and unhealthy foods.",
+  "pro_probs": {
+    "entailment": 0.1082,
+    "neutral": 0.6486,
+    "contradiction": 0.2432
+  },
+  "con_probs": {
+    "entailment": 0.5416,
+    "neutral": 0.4297,
+    "contradiction": 0.0287
+  }
+}
+
+logical cogency
+
+{
+  "claim": "Taxation alone is not an effective solution for addressing unhealthy eating habits.",
+  "premises": [
+    "Taxation often does not account for the underlying socioeconomic factors that lead to poor dietary choices.",
+    "Low-income communities may still face limited access to supermarkets and fresh produce, regardless of a tax.",
+    "A multi-faceted approach that includes taxation, education, and improved access to healthy food options is more effective.",
+    "Taxation without addressing the root causes of unhealthy eating habits may not lead to long-term behavioral change."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "gemma4:26b"
+}
+
+{
+  "cogency_score": 0.9327,
+  "label": "HIGH",
+  "acceptability": 0.9618,
+  "relevance": 0.9346,
+  "sufficiency": 0.9183,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9183,
+    "neutral": 0.0679,
+    "contradiction": 0.0138
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+pro consistency
+
+{
+  "claim": "A tax on sugary and unhealthy foods can be designed to mitigate its impact on low-income individuals and can be used to fund subsidies for healthier food options, creating a more balanced and inclusive health policy.",
+  "prior_claims": [
+    "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs."
+  ]
+}
+
+{
+  "consistency_score": 0.9918,
+  "max_contradiction": 0.0082,
+  "conflicting_prior": "Governments should impose a tax on sugary and unhealthy foods because such a measure would significantly reduce the consumption of these products, thereby promoting public health and lowering healthcare costs.",
+  "inconsistent": false,
+  "n_priors": 1
+}
+
+con consistency
+
+{
+  "claim": "Taxation alone is not an effective solution for addressing unhealthy eating habits.",
+  "prior_claims": [
+    "Imposing a tax on sugary and unhealthy foods is not the most effective or equitable solution."
+  ]
+}
+
+{
+  "consistency_score": 0.9849,
+  "max_contradiction": 0.0151,
+  "conflicting_prior": "Imposing a tax on sugary and unhealthy foods is not the most effective or equitable solution.",
+  "inconsistent": false,
+  "n_priors": 1
+}

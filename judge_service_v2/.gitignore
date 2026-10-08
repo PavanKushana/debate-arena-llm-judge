@@ -1,0 +1,48 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# Model weights & large ML files
+*.pt
+*.pth
+*.bin
+*.onnx
+*.pkl
+*.pickle
+*.h5
+*.safetensors
+
+# Audio / Video files
+*.wav
+*.mp3
+*.mp4
+*.flac
+*.ogg
+*.m4a
+
+# Data files
+*.csv
+*.json.gz
+*.parquet
+*.arrow
+*.npy
+*.npz
+
+# Logs
+*.log
+logs/
+
+# HuggingFace cache
+.cache/
+huggingface/
+
+# FastAPI

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local settings (may contain server addresses)
+.env
+
+# Runtime logs and reports written by the judge
+logs/
+*.log
+*.jsonl
+
+# Model downloads and caches
+.cache/
+huggingface/
+*.bin
+*.safetensors
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

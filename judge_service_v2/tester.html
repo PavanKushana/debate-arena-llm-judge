@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debate Judge · metric tester</title>
+<style>
+  :root {
+    --bg:#0f1115; --panel:#161a21; --panel2:#1b2029; --line:#272d38;
+    --ink:#e7ebf0; --muted:#8b95a6; --faint:#5b6472;
+    --turn:#6ea8fe; --debate:#c58af9; --util:#5fd0a6;
+    --ok:#4ade80; --err:#f87171; --accent:#f0b429;
+    --mono:'SF Mono',ui-monospace,'JetBrains Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;
+       display:grid;grid-template-columns:248px 1fr;grid-template-rows:52px 1fr;height:100vh;overflow:hidden}
+
+  header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 18px;
+         border-bottom:1px solid var(--line);background:var(--panel)}
+  header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.02em}
+  header .logo b{color:var(--accent)}
+  header .base{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+  header input#base{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+        font-family:var(--mono);font-size:12px;padding:5px 8px;border-radius:6px;width:230px}
+  header select#model{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+        font-family:var(--mono);font-size:12px;padding:5px 8px;border-radius:6px;cursor:pointer}
+  header select#model:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .health{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+  .dot.up{background:var(--ok)} .dot.down{background:var(--err)}
+
+  nav{border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:10px 0}
+  nav .group{padding:12px 16px 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  nav button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:0;
+        color:var(--muted);font-family:var(--sans);font-size:13px;padding:8px 16px;cursor:pointer;border-left:2px solid transparent}
+  nav button:hover{background:var(--panel2);color:var(--ink)}
+  nav button.active{background:var(--panel2);color:var(--ink);border-left-color:var(--accent)}
+  nav .tag{width:7px;height:7px;border-radius:2px;flex:none}
+  .t-turn{background:var(--turn)} .t-debate{background:var(--debate)} .t-util{background:var(--util)}
+
+  main{overflow-y:auto;padding:22px 26px}
+  .head{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+  .head h1{font-size:19px;margin:0;font-weight:650}
+  .head .lvl{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted)}
+  .route{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 4px}
+  .route .m{color:var(--accent);font-weight:700}
+  .desc{color:var(--muted);max-width:760px;margin:8px 0 18px;line-height:1.55}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .card .bar{display:flex;align-items:center;justify-content:space-between;
+        padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+  .card .bar span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .card .body{padding:14px}
+  textarea{width:100%;min-height:340px;background:#0c0e12;border:1px solid var(--line);border-radius:8px;
+        color:var(--ink);font-family:var(--mono);font-size:12.5px;line-height:1.5;padding:12px;resize:vertical;tab-size:2}
+  textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .controls{display:flex;align-items:center;gap:10px;margin-top:12px}
+  button.run{background:var(--accent);color:#1a1400;border:0;font-weight:700;font-family:var(--sans);
+        font-size:13.5px;padding:9px 20px;border-radius:7px;cursor:pointer}
+  button.run:hover{filter:brightness(1.08)} button.run:disabled{opacity:.55;cursor:default}
+  button.ghost{background:none;border:1px solid var(--line);color:var(--muted);padding:8px 12px;border-radius:7px;
+        cursor:pointer;font-size:12.5px} button.ghost:hover{color:var(--ink);border-color:var(--faint)}
+  .meta{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;gap:12px;align-items:center}
+  .status{font-weight:700} .status.ok{color:var(--ok)} .status.err{color:var(--err)}
+  .out{min-height:340px;background:#0c0e12;border:1px solid var(--line);border-radius:8px;
+        padding:12px;font-family:var(--mono);font-size:12.5px;line-height:1.5;overflow:auto;white-space:pre;margin:0}
+  .out .k{color:var(--turn)} .out .s{color:#a5d6a7} .out .n{color:var(--accent)}
+  .out .b{color:var(--util)} .out .nl{color:var(--faint)}
+  .hint{color:var(--faint);font-size:12px;margin-top:9px;line-height:1.5}
+  .hint code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:4px;color:var(--muted)}
+  .llmwarn{color:var(--accent);font-size:12px;margin-top:8px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">DEBATE·JUDGE <b>tester</b></div>
+    <div class="base">
+      <label for="model">LLM</label>
+      <select id="model"></select>
+      <span class="health" title="judge-api"><span class="dot" id="hdot"></span>api</span>
+      <span class="health" title="ollama"><span class="dot" id="odot"></span><span id="olabel">ollama</span></span>
+      <label for="base">API</label>
+      <input id="base" value="">
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <main>
+    <div class="head"><h1 id="m-title"></h1><span class="lvl" id="m-lvl"></span></div>
+    <p class="route"><span class="m">POST</span> <span id="m-route"></span></p>
+    <p class="desc" id="m-desc"></p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="bar"><span>Request body (JSON)</span><button class="ghost" id="reset">Reset example</button></div>
+        <div class="body">
+          <textarea id="req" spellcheck="false"></textarea>
+          <div class="controls">
+            <button class="run" id="run">Send request</button>
+            <span class="meta">
+              <span id="statline"></span>
+              <span id="timeline"></span>
+            </span>
+          </div>
+          <div class="hint" id="hint"></div>
+          <div class="llmwarn" id="llmwarn"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="bar"><span>Response</span>
+          <span style="display:flex;gap:6px;align-items:center">
+            <button class="ghost" id="viewJson" style="display:none">JSON</button>
+            <button class="ghost" id="viewGraph" style="display:none">Graph view</button>
+            <button class="ghost" id="copy">Copy</button>
+          </span>
+        </div>
+        <div class="body">
+          <pre class="out" id="out">— run a request to see the response —</pre>
+          <div id="graphhost" style="display:none;height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ── metric catalog: everything that exists in judge_service_v2 ───────────────
+const METRICS = [
+  { id:"llm-winner", level:"debate", title:"★ LLM Debate Winner", route:"/score/debate/llm-winner", usesModel:false,
+    desc:"One-shot LLM-as-a-Judge. Give the complete debate of exactly two speakers and the topic. The selected Ollama model reads the raw transcript and independently determines the winner (or TIE), with a clear decision rationale, speaker-by-speaker analysis, and decisive debate points. This endpoint is independent from the deterministic winner engine and makes exactly one LLM call.",
+    body:{topic:"Money can buy happiness",
+      model:"gpt-oss:20b",
+      temperature:0.0,
+      turns:[
+        {speaker:"Alice", turn_no:1, text:"Money reduces financial stress and improves overall well-being."},
+        {speaker:"Bob", turn_no:2, text:"That assumes security equals happiness, but wealth can also create isolation, so it does not follow."},
+        {speaker:"Alice", turn_no:3, text:"Even so, financial security reduces anxiety, and higher income is associated with lower stress."},
+        {speaker:"Bob", turn_no:4, text:"Lower stress is not the same as happiness. Meaning, relationships, and purpose are also important."}
+      ]},
+    llm:"Recommended model: gpt-oss:20b. The model is sent in this request body, so you can change it directly to another Ollama model such as qwen2.5:7b. This endpoint makes one LLM judge call only; it does not use the deterministic metric-based winner." },
+
+  { id:"debate", level:"debate", title:"★ Whole Debate (all metrics)", route:"/score/debate", usesModel:true,
+    desc:"ONE call that runs every metric over a full debate, per speaker. Claim+premises are mined once per turn and reused; stance hypotheses are generated once per topic; rebuttal runs once and argument survival is a view of its links, not a second pass. Scales differ by design and are never combined — stance and consistency are 0-1, the cogency dimensions and rebuttal are 1-3, survival is a status count. After scoring, the deterministic winner engine compares the metrics in two levels: Level 1 (logical cogency + rebuttal), then Level 2 (stance support + consistency + information density) if Level 1 does not distinguish the speakers. No separate reasoning-model call is used for winner determination.",
+    body:{topic:"Money can buy happiness",
+      stance_by_speaker:{Alice:"PRO", Bob:"CON"},
+      use_llm_rebuttal:true,
+      turns:[
+        {speaker:"Alice", turn_no:1, text:"Money reduces financial stress and improves overall well-being."},
+        {speaker:"Bob", turn_no:2, text:"That assumes security equals happiness, but wealth often breeds isolation, so it does not follow."},
+        {speaker:"Alice", turn_no:3, text:"Even so, financial security reduces anxiety, and studies link higher income to lower stress."},
+        {speaker:"Bob", turn_no:4, text:"Lower stress is not the same as happiness, which needs meaning and connection money cannot buy."}
+      ]},
+    llm:"Scoring uses the selected model (keep it an instruct model like qwen2.5:7b). Winner determination is deterministic Python logic and makes no additional LLM call." },
+
+  { id:"stance", level:"turn", title:"Stance Support", route:"/score/stance-support", usesModel:true,
+    desc:"Did the speaker hold the side he was assigned? The turn is run through DeBERTa NLI against THIS speaker's own-side claim, generated from the topic (one cached LLM call) unless you supply it. entailment = backed his side, contradiction = argued against it, neutral = no clear position. Pass claim to score the mined conclusion instead of the whole turn — stance is about the conclusion, and premises are stance-neutral noise. Pass hypothesis to skip generation: ONE sentence for this speaker's side, never a PRO/CON pair, since stance already says which side.",
+    body:{topic:"Money can buy happiness.", turn:"Financial security reduces stress and improves people's well-being.", stance:"PRO", claim:null, hypothesis:null},
+    llm:"Scoring uses the shared DeBERTa. The own-side claim comes from the selected Ollama model unless hypothesis is supplied — with Ollama down and no hypothesis, this returns 400 rather than a meaningless score." },
+
+  { id:"cogency", level:"turn", title:"Logical Cogency (ARS)", route:"/score/logical-cogency", usesModel:true,
+    desc:"Cogency as its three sub-dimensions (Wachsmuth et al. 2017), each on the paper's 1-3 scale so results compare directly against the Dagstuhl ArgQuality corpus: local_acceptability (premises worthy of being believed), local_relevance (premises support or attack the conclusion), local_sufficiency (premises enough to draw it). All three come from ONE LLM call, each with a rationale that QUOTES the premise it turns on. Never averaged into a single score — cogency is annotated by humans in its own right, so a mean would be an invention. Sufficiency is judged GRANTING the premises as true, which keeps it independent: acceptability 1 with sufficiency 3 is a normal, informative result. local_relevance_nli_diagnostic carries DeBERTa's 1 - P(neutral) and is NOT a score — it reads near zero even for plainly on-topic premises, because NLI's neutral class means 'does not entail', not 'is not about this'.",
+    body:{claim:"Money contributes to happiness.", premises:["Money lets people travel.","Money reduces financial stress."]},
+    llm:"One LLM call with the selected model. The NLI diagnostic reuses the loaded DeBERTa; set COGENCY_NLI_DIAGNOSTIC=false to skip it." },
+
+  { id:"consistency", level:"turn", title:"Consistency", route:"/score/consistency",
+    desc:"Did the speaker contradict their own earlier claims? 1 - MAX contradiction against each prior claim (max, not mean: contradicting one earlier claim makes a speaker inconsistent, and averaging would let two agreements dilute one flat contradiction). Every pair is scored independently and returned in per_prior_claim, with most_contradicted naming WHICH claim was hit. prior_claims accepts plain strings or {claim, turn_no}. With no priors the score is null, not 1.0 — an opening turn has nothing to be consistent with. Deterministic, no LLM.",
+    body:{claim:"Money has no effect on well-being.", prior_claims:["Money improves happiness by reducing financial stress.","Financial security lowers day-to-day anxiety."]} },
+
+  { id:"rebuttal", level:"debate", title:"Rebuttal (sentence level)", route:"/score/rebuttal-debate", usesModel:true,
+    desc:"Each non-opener turn is split into sentences and NLI-screened against every earlier OPPONENT point (claim + premises; opening claims ARE attackable). One LLM call per surviving sentence confirms it is really a rebuttal, says what it targets, flags counterexamples, scores it 1-3 and quotes what landed. Non-adjacent links are found automatically - turn 5 can rebut turn 1. Attack types follow structured argumentation (Pollock 1987; Prakken 2010): undermining hits a premise, rebutting hits the conclusion, undercutting hits the inference step. A counterexample is a separate flag, since it is a method rather than a target. NLI contradiction only shortlists candidates; it is never a score. by_speaker also carries free coverage counts - faced, answered, and the points each speaker left standing.",
+    body:{use_llm:true, turns:[
+      {speaker:"Alice", turn_no:1, claim:"Money can buy happiness.", premises:["Financial security reduces anxiety.","Higher income is linked to lower stress."], text:"Money can buy happiness because financial security reduces anxiety, and higher income is linked to lower stress."},
+      {speaker:"Bob", turn_no:2, claim:"Money cannot buy happiness.", premises:["Wealth often breeds isolation.","Happiness needs meaning, not comfort."], text:"Wealth often breeds isolation. Happiness needs meaning, not merely comfort."},
+      {speaker:"Alice", turn_no:3, claim:"Isolation is not caused by money.", premises:["Many wealthy people have strong relationships."], text:"That isolation point is wrong: many wealthy people have strong relationships. Also, the weather is lovely today."},
+      {speaker:"Bob", turn_no:4, claim:"Lower stress is not happiness.", premises:["Stress reduction is not the same as meaning."], text:"The income study only covered a single country, so it proves little. And even if income does reduce stress, that does not make people happy."}
+    ]},
+    llm:"One LLM call per sentence that clears the screen. Bob's turn 4 is built to show the distinction - the first sentence undermines a premise, the second undercuts the inference." },
+
+  { id:"survival", level:"debate", title:"Argument Survival", route:"/score/argument-survival", usesModel:true,
+    desc:"Did each argument survive? Pure bookkeeping over the rebuttal links — it runs no model of its own. Each argument is unchallenged (never attacked), defended (attacked, and its owner answered the attacker), weakened (attacked with low or moderate force, never answered), or refuted (attacked at 3/3, never answered). The old decimal survival with multiplicative decay was removed: it re-scored links rebuttal had already found, allowed only one move per turn, and compounded arbitrary coefficients into precise-looking numbers. Pass rebuttal_result to reuse a pass you already ran; omit it and one is computed here first.",
+    body:{use_llm:true, rebuttal_result:null, turns:[
+      {speaker:"Alice", turn_no:1, claim:"Money can buy happiness.", premises:["Financial security reduces anxiety."], text:"Money can buy happiness because financial security reduces anxiety."},
+      {speaker:"Bob", turn_no:2, claim:"Money cannot buy happiness.", premises:["Wealth often breeds isolation."], text:"Wealth often breeds isolation, so money does not deliver happiness."},
+      {speaker:"Alice", turn_no:3, claim:"Isolation is not caused by money.", premises:["Many wealthy people have strong relationships."], text:"Isolation is not caused by money; many wealthy people have strong relationships."}
+    ]},
+    llm:"With rebuttal_result omitted this runs the rebuttal pass first, so it costs the same LLM calls as that endpoint." },
+
+  { id:"infodensity", level:"debate", title:"Information Density", route:"/score/information-density", usesModel:true,
+    desc:"Of everything one speaker said, what share carried a point not already made. ONE LLM call clusters the speaker's statements into distinct points, grouping paraphrased restatements; every count and ratio is then computed in Python from those clusters, so no number depends on the model doing arithmetic, and all of it is recomputable from the logged points. new-vs-repeat comes from turn order, never from the model. information_density = distinct on-topic points / total statements; points_per_100w is the length-normalised companion, since a speaker who packs three points into one sentence is denser than one who spreads them over five. The NLI baseline was removed: it computed a different quantity under the same field name, so numbers from the two paths were never comparable.",
+    body:{turns:["Money reduces financial stress.","Wealth lowers money-related anxiety.","Money also buys better healthcare access."], topic:"Money can buy happiness", speaker:"PRO"},
+    llm:"One LLM call with the selected model. No fallback — a failure raises rather than returning an invented density." },
+
+  { id:"topic", level:"util", title:"Topic Hypotheses (LLM)", route:"/util/topic-hypotheses", usesModel:true,
+    desc:"Generate the PRO and CON stance hypotheses for a topic — the two claims the debate is fought over. One LLM call, cached per (topic, model). Stance Support calls this itself, so you only need this endpoint to inspect the pair or hand-check a topic before scoring. Question-form and motion-form topics are converted into declarative propositions here; that conversion is what makes the NLI score meaningful.",
+    body:{topic:"Should homework be banned?", use_cache:true},
+    llm:"This endpoint calls the LLM (uses the selected model)." },
+
+  { id:"mine", level:"util", title:"Mine Argument (LLM)", route:"/util/mine-argument", usesModel:true,
+    desc:"Extract a claim + premises from a free-text argument. Its output feeds the stance / cogency / rebuttal endpoints. The read timeout is 300s with one retry, because the FIRST call after a restart pays the model load — a cold 20B on a shared host can take minutes. Later calls hit a warm model and return in seconds.",
+    body:{argument:"Money reduces financial stress, so it improves people's overall well-being."},
+    llm:"Reasoning models (gpt-oss, deepseek-r1) fight the JSON grammar constraint and often return empty content — prefer a plain instruct model such as qwen2.5:7b." },
+];
+
+const LEVEL_LABEL = {turn:"turn-level", debate:"debate-level", util:"LLM utility"};
+const LEVEL_GROUP = {turn:"Turn level", debate:"Debate level", util:"Utilities"};
+
+// ── LLM models offered in the dropdown (used for every LLM call) ─────────────
+// Scoring models — must be INSTRUCT models that satisfy the JSON `format`
+// grammar used by the metric-level structured calls. Reasoning models such as
+// gpt-oss are intentionally not listed here because several metric calls use
+// schema-constrained JSON output. The separate LLM Debate Winner endpoint has
+// its own model field and can use gpt-oss:20b independently.
+const MODELS = ["qwen2.5:7b", "qwen3.6:27b", "gemma4:26b"];
+const modelSel = document.getElementById("model");
+MODELS.forEach(m => { const o=document.createElement("option"); o.value=m; o.textContent=m; modelSel.appendChild(o); });
+const _saved = localStorage.getItem("judge_model");
+modelSel.value = MODELS.includes(_saved) ? _saved : MODELS[0];   // never a stale non-instruct model
+const currentModel = () => modelSel.value;
+modelSel.addEventListener("change", () => {
+  localStorage.setItem("judge_model", modelSel.value);
+  syncModelIntoBody();     // reflect the choice in the visible request body
+  checkModelAvailable();
+});
+
+// ── base URL ────────────────────────────────────────────────────────────────
+const baseInput = document.getElementById("base");
+baseInput.value = localStorage.getItem("judge_base") || (location.origin.startsWith("http") ? location.origin : "http://localhost:8500");
+baseInput.addEventListener("change", () => { localStorage.setItem("judge_base", baseInput.value.trim()); pingHealth(); });
+const base = () => baseInput.value.trim().replace(/\/+$/,"");
+
+// ── build nav ────────────────────────────────────────────────────────────────
+const nav = document.getElementById("nav");
+let current = METRICS[0];
+["turn","debate","util"].forEach(lvl => {
+  const g = document.createElement("div"); g.className="group"; g.textContent=LEVEL_GROUP[lvl]; nav.appendChild(g);
+  METRICS.filter(m=>m.level===lvl).forEach(m=>{
+    const b=document.createElement("button"); b.dataset.id=m.id;
+    b.innerHTML=`<span class="tag t-${m.level}"></span>${m.title}`;
+    b.onclick=()=>select(m.id); nav.appendChild(b);
+  });
+});
+
+function select(id){
+  current = METRICS.find(m=>m.id===id);
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active", b.dataset.id===id));
+  document.getElementById("m-title").textContent=current.title;
+  document.getElementById("m-lvl").textContent=LEVEL_LABEL[current.level];
+  document.getElementById("m-route").textContent=current.route;
+  document.getElementById("m-desc").textContent=current.desc;
+  document.getElementById("llmwarn").textContent=current.llm||"";
+  document.getElementById("hint").innerHTML = `Endpoint <code>${base()}${current.route}</code> · edit the JSON and press <code>Ctrl/Cmd + Enter</code>.`;
+  const body = JSON.parse(JSON.stringify(current.body));
+  if (current.usesModel) body.model = currentModel();   // LLM metrics carry the chosen model
+  document.getElementById("req").value=JSON.stringify(body,null,2);
+  document.getElementById("out").textContent="— run a request to see the response —";
+  if(typeof showGraphControls==="function"){ showGraphControls(false); setResponseMode("json"); }
+  document.getElementById("statline").textContent="";
+  document.getElementById("timeline").textContent="";
+}
+
+// Keep the visible request body's "model" field in step with the dropdown.
+function syncModelIntoBody(){
+  if (!current.usesModel) return;
+  try {
+    const body = JSON.parse(document.getElementById("req").value);
+    body.model = currentModel();
+    document.getElementById("req").value = JSON.stringify(body,null,2);
+  } catch { /* leave malformed JSON for the user to fix */ }
+}
+
+document.getElementById("reset").onclick=()=>{document.getElementById("req").value=JSON.stringify(current.body,null,2);};
+
+// ── syntax highlight for JSON output ─────────────────────────────────────────
+function hl(json){
+  return json
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"([^"]+)":/g,'<span class="k">"$1"</span>:')
+    .replace(/: "([^"]*)"/g,': <span class="s">"$1"</span>')
+    .replace(/: (-?\d+\.?\d*(e-?\d+)?)/g,': <span class="n">$1</span>')
+    .replace(/: (true|false|null)/g,': <span class="b">$1</span>');
+}
+
+// ── run ──────────────────────────────────────────────────────────────────────
+const runBtn=document.getElementById("run");
+async function run(){
+  let payload;
+  try { payload = JSON.parse(document.getElementById("req").value); }
+  catch(e){ document.getElementById("out").innerHTML='<span style="color:var(--err)">Request body is not valid JSON: '+e.message+'</span>'; return; }
+  if (current.usesModel) payload.model = currentModel();   // dropdown is the source of truth
+
+  runBtn.disabled=true; runBtn.textContent="Sending…";
+  const stat=document.getElementById("statline"), tl=document.getElementById("timeline");
+  stat.className="status"; stat.textContent=""; tl.textContent="";
+  const t0=performance.now();
+  // A cold model load takes minutes; without a counter a healthy long request
+  // looks like a hang.
+  const tick=setInterval(()=>{
+    const s=Math.round((performance.now()-t0)/1000);
+    tl.textContent = s<3 ? "" : `${s}s${s>25?" · cold model load can take minutes":""}`;
+  }, 1000);
+  try{
+    const r=await fetch(base()+current.route,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    const dt=Math.round(performance.now()-t0);
+    const text=await r.text();
+    let pretty; try{ pretty=JSON.stringify(JSON.parse(text),null,2); }catch{ pretty=text; }
+    document.getElementById("out").innerHTML=hl(pretty);
+    stat.classList.add(r.ok?"ok":"err"); stat.textContent=`${r.status} ${r.statusText}`;
+    tl.textContent=`${dt} ms`;
+    // graph view: fetch survival too and merge, then draw a health-aware graph
+    try{
+      const parsed=JSON.parse(text);
+      if(current.id==="rebuttal" && r.ok && parsed.rebuttals){
+        window.__lastGraph={result:parsed, turns:(payload.turns||[]), survival:null};
+        showGraphControls(true);
+        setResponseMode("graph");                 // draw edges immediately
+        // second call: argument-survival on the SAME turns (non-blocking)
+        try{
+          const sr=await fetch(base()+"/score/argument-survival",{method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({turns:(payload.turns||[]), rebuttal_result:parsed, model:payload.model||null})});
+          if(sr.ok){ window.__lastGraph.survival=await sr.json();
+            if(document.getElementById("graphhost").style.display!=="none")
+              drawRebuttalGraph(document.getElementById("graphhost"), window.__lastGraph.result, window.__lastGraph.turns, window.__lastGraph.survival); }
+        }catch(se){ /* survival optional; graph still works without it */ }
+      } else { showGraphControls(false); setResponseMode("json"); }
+    }catch{ showGraphControls(false); setResponseMode("json"); }
+  }catch(e){
+    document.getElementById("out").innerHTML='<span style="color:var(--err)">Network error: '+e.message+
+      '\n\nIs the API running, and is the base URL above correct?\nStart it with:\n  uvicorn judge_service_v2.api:app --host 0.0.0.0 --port 8500</span>';
+    stat.classList.add("err"); stat.textContent="no response";
+  }finally{ clearInterval(tick); runBtn.disabled=false; runBtn.textContent="Send request"; }
+}
+runBtn.onclick=run;
+document.getElementById("req").addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") run(); });
+
+document.getElementById("copy").onclick=()=>{ navigator.clipboard.writeText(document.getElementById("out").textContent); };
+
+// ── health pings: judge-api and ollama ───────────────────────────────────────
+let _ollamaModels = [];
+async function pingHealth(){
+  const d=document.getElementById("hdot");
+  try{ const r=await fetch(base()+"/health"); d.className="dot "+(r.ok?"up":"down"); }
+  catch{ d.className="dot down"; }
+
+  const od=document.getElementById("odot"), ol=document.getElementById("olabel");
+  try{
+    const r=await fetch(base()+"/health/ollama"); const j=await r.json();
+    if(j.reachable){ od.className="dot up"; _ollamaModels=j.models||[];
+      ol.textContent=`ollama · ${_ollamaModels.length} model${_ollamaModels.length===1?"":"s"}`; }
+    else{ od.className="dot down"; _ollamaModels=[]; ol.textContent="ollama down"; }
+  }catch{ od.className="dot down"; _ollamaModels=[]; ol.textContent="ollama down"; }
+  checkModelAvailable();
+}
+
+// Warn (in the LLM note line) if the picked model isn't loaded on Ollama.
+function checkModelAvailable(){
+  const w=document.getElementById("llmwarn");
+  if(!current || !current.usesModel){ return; }
+  const base = current.llm || "";
+  if(_ollamaModels.length && !_ollamaModels.includes(currentModel())){
+    w.innerHTML = base + `  ⚠ "${currentModel()}" is not in Ollama's loaded models — pull it or pick another.`;
+  } else {
+    w.textContent = base;
+  }
+}
+
+// ══ Rebuttal graph view (turn nodes + survival overlay + clickable edges) ════
+const G_COLORS={undermining:"#e3a857",rebutting:"#f87171",undercutting:"#7fb3d5",unscored:"#8b95a6"};
+const G_LABEL={undermining:"undermining",rebutting:"rebutting",undercutting:"undercutting"};
+const EFF_WORD={1:"low",2:"moderate",3:"high"};
+function gClip(s,n){s=(s||"").replace(/\s+/g," ").trim();return s.length>n?s.slice(0,n-1)+"…":s;}
+function gEsc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function healthColor(v){ if(v==null)return "#5b6472"; if(v>=0.66)return "#4ade80"; if(v>=0.33)return "#e3a857"; return "#f87171"; }
+
+// ── survival index: map turn -> {current, history[]} from the survival result ─
+// Survival is a status per argument now, not a decaying decimal.
+const SURV_COLOR={unchallenged:"#4ade80",defended:"#7fb3d5",weakened:"#e3a857",refuted:"#f87171"};
+function buildSurvivalIndex(survival){
+  const idx={};
+  (survival&&survival.arguments||[]).forEach(a=>{ idx[a.turn_no]=a; });
+  return idx;
+}
+function survivalMove(){ return null; }   // no before/after transitions any more
+
+// Per-speaker summary strip shown above the graph (rebuttals made, coverage).
+// Uses the fields score_rebuttal_debate returns in by_speaker.
+function drawSpeakerPanel(host, bySpeaker){
+  if(!bySpeaker) return;
+  const wrap=document.createElement("div");
+  wrap.style.cssText="display:flex;gap:12px;flex-wrap:wrap;margin:6px 6px 14px";
+  Object.entries(bySpeaker).forEach(([sp,d])=>{
+    d=d||{};
+    const me=d.mean_effectiveness;
+    const card=document.createElement("div");
+    card.style.cssText="flex:1;min-width:210px;background:var(--panel,#161a21);border:1px solid var(--line,#272d38);border-radius:8px;padding:10px 12px";
+    card.innerHTML=`<div style="font-family:var(--mono);font-weight:700;margin-bottom:5px">${gEsc(sp)}</div>
+      <div style="font-size:12px;color:var(--muted,#8b95a6);line-height:1.7">
+        rebuttals made: <b style="color:var(--ink,#e7ebf0)">${d.rebuttals_made??0}</b>${me!=null?` &middot; mean eff <b style="color:var(--ink,#e7ebf0)">${me}/3</b>`:""}<br>
+        points answered: <b style="color:var(--ink,#e7ebf0)">${d.points_answered??0}/${d.points_faced??0}</b>${d.points_unaddressed?` &middot; <span style="color:#e3a857">${d.points_unaddressed} unaddressed</span>`:""}
+      </div>`;
+    wrap.appendChild(card);
+  });
+  host.appendChild(wrap);
+}
+
+function drawRebuttalGraph(host, result, turns, survival){
+  const NS="http://www.w3.org/2000/svg", rb=result.rebuttals||[];
+  const survIdx=buildSurvivalIndex(survival);
+  const tm=new Map();
+  (turns||[]).forEach(t=>tm.set(t.turn_no,{turn:t.turn_no,speaker:t.speaker,claim:t.claim||"",text:t.text||""}));
+  rb.forEach(r=>[r.from,r.target].forEach(s=>{if(!tm.has(s.turn))tm.set(s.turn,{turn:s.turn,speaker:s.speaker,claim:"",text:""});}));
+  const turnsArr=[...tm.values()].sort((a,b)=>a.turn-b.turn);
+  host.innerHTML="";
+  drawSpeakerPanel(host, result.by_speaker);
+  if(!turnsArr.length){host.innerHTML='<div style="padding:24px;color:var(--faint)">No turns to graph.</div>';return;}
+  const speakers=[...new Set(turnsArr.map(t=>t.speaker))];
+  const colX={};speakers.forEach((s,i)=>colX[s]=120+i*320);
+  const W=120+speakers.length*320+240, NW=220,NH=66;
+  const opener={};turnsArr.forEach(t=>{if(!(t.speaker in opener))opener[t.speaker]=t.turn;});
+  const rowY={};turnsArr.forEach((t,i)=>rowY[t.turn]=54+i*96);
+  const H=54+turnsArr.length*96+30;
+  const wasT=new Set(rb.map(r=>r.target.turn));
+  const svg=document.createElementNS(NS,"svg");svg.setAttribute("width",W);svg.setAttribute("height",H);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(NS,"defs");
+  Object.entries(G_COLORS).forEach(([k,c])=>{const m=document.createElementNS(NS,"marker");m.setAttribute("id","gm-"+k);m.setAttribute("viewBox","0 0 10 10");m.setAttribute("refX","9");m.setAttribute("refY","5");m.setAttribute("markerWidth","7");m.setAttribute("markerHeight","7");m.setAttribute("orient","auto-start-reverse");const p=document.createElementNS(NS,"path");p.setAttribute("d","M0,0 L10,5 L0,10 z");p.setAttribute("fill",c);m.appendChild(p);defs.appendChild(m);});
+  svg.appendChild(defs);
+  const eg=document.createElementNS(NS,"g"),ng=document.createElementNS(NS,"g");svg.appendChild(eg);svg.appendChild(ng);
+  const box=tn=>{const t=tm.get(tn),x=colX[t.speaker],y=rowY[tn];return{x,y,cy:y+NH/2,left:x,right:x+NW,t};};
+  const els=[];
+  rb.forEach((r,i)=>{const a=box(r.from.turn),b=box(r.target.turn),same=a.t.speaker===b.t.speaker;let x1,x2;const y1=a.cy,y2=b.cy;
+    if(same){x1=a.right;x2=b.right;}else if(colX[a.t.speaker]<colX[b.t.speaker]){x1=a.right;x2=b.left;}else{x1=a.left;x2=b.right;}
+    const mx=same?Math.max(x1,x2)+46+((r.from.turn%3)*16):(x1+x2)/2;
+    const col=G_COLORS[r.attack_type]||G_COLORS.unscored,w=1.5+(r.effectiveness||1)*2.2;
+    const d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+    const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke",col);p.setAttribute("stroke-width",w);p.setAttribute("opacity",".75");p.setAttribute("marker-end",`url(#gm-${r.attack_type in G_COLORS?r.attack_type:"unscored"})`);p.style.cursor="pointer";
+    const hit=document.createElementNS(NS,"path");hit.setAttribute("d",d);hit.setAttribute("fill","none");hit.setAttribute("stroke","transparent");hit.setAttribute("stroke-width","22");hit.style.cursor="pointer";  // wide hit area
+    const move=survivalMove(survIdx, r.target.turn, r.from.turn);
+    const sel=(ev)=>{els.forEach(e=>{e.p.setAttribute("opacity",e.i===i?"1":".12");});gEdgePopup(r, move, ev);};
+    p.addEventListener("click",sel);hit.addEventListener("click",sel);
+    const tip=`Turn ${r.from.turn} ${G_LABEL[r.attack_type]||"attack"} → Turn ${r.target.turn} · effectiveness ${r.effectiveness??"?"}/3`;
+    [p,hit].forEach(e=>{e.addEventListener("mousemove",ev=>gTip(tip,ev));e.addEventListener("mouseleave",gTipHide);});
+    eg.appendChild(p);eg.appendChild(hit);els.push({p,i});});
+  turnsArr.forEach(t=>{const {x,y}=box(t.turn),isOp=opener[t.speaker]===t.turn,un=!wasT.has(t.turn)&&!isOp&&t.claim;
+    const sv=survIdx[t.turn];  // survival of the argument this turn introduced
+    const g=document.createElementNS(NS,"g");g.style.cursor="pointer";
+    const rect=document.createElementNS(NS,"rect");rect.setAttribute("x",x);rect.setAttribute("y",y);rect.setAttribute("width",NW);rect.setAttribute("height",NH);rect.setAttribute("rx",8);
+    rect.setAttribute("fill",t.speaker===speakers[0]?"#182233":"#231a2e");rect.setAttribute("stroke",un?"#4ade80":"#272d38");rect.setAttribute("stroke-width","1.5");if(isOp)rect.setAttribute("stroke-dasharray","4 3");
+    g.appendChild(rect);
+    const who=document.createElementNS(NS,"text");who.setAttribute("x",x+11);who.setAttribute("y",y+16);who.setAttribute("fill","#5b6472");who.setAttribute("font-size","9");who.setAttribute("font-family","var(--mono)");who.textContent=`TURN ${t.turn} · ${t.speaker}`+(isOp?" · OPENER":"");g.appendChild(who);
+    const lb=document.createElementNS(NS,"text");lb.setAttribute("x",x+11);lb.setAttribute("y",y+33);lb.setAttribute("fill","#e7ebf0");lb.setAttribute("font-size","12");lb.setAttribute("font-weight","600");lb.setAttribute("font-family","var(--mono)");lb.textContent=gClip(t.claim||t.text||"(no claim)",26);g.appendChild(lb);
+    if(sv){
+      const c=SURV_COLOR[sv.status]||"#5b6472";
+      const st=document.createElementNS(NS,"text");st.setAttribute("x",x+11);st.setAttribute("y",y+NH-10);
+      st.setAttribute("fill",c);st.setAttribute("font-size","9.5");st.setAttribute("font-family","var(--mono)");
+      st.textContent=sv.status+(sv.strongest_attack?` · hit ${sv.strongest_attack}/3`:"");g.appendChild(st);
+    } else if(un){
+      const t2=document.createElementNS(NS,"text");t2.setAttribute("x",x+11);t2.setAttribute("y",y+NH-10);
+      t2.setAttribute("fill","#4ade80");t2.setAttribute("font-size","9");t2.setAttribute("font-family","var(--mono)");
+      t2.textContent="↳ never rebutted";g.appendChild(t2);
+    }
+    g.addEventListener("click",(ev)=>{const rel=rb.filter(x=>x.from.turn===t.turn||x.target.turn===t.turn);const idx=new Set();rb.forEach((x,i)=>{if(x.from.turn===t.turn||x.target.turn===t.turn)idx.add(i);});els.forEach(e=>e.p.setAttribute("opacity",idx.has(e.i)?"1":".12"));gNodePopup(t,rel,sv,ev);});
+    g.addEventListener("mousemove",ev=>gTip(gEsc(t.claim||t.text||"(no claim)")+(sv?`  ·  ${sv.status}`:""),ev));
+    g.addEventListener("mouseleave",gTipHide);
+    ng.appendChild(g);});
+  host.appendChild(svg);
+}
+
+// ── floating popup (anchored at click) ──────────────────────────────────────
+let _pop=null;
+function popEl(){
+  if(_pop) return _pop;
+  _pop=document.createElement("div");
+  _pop.style.cssText="position:fixed;z-index:9999;max-width:420px;background:#161a21;border:1px solid #363c49;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);padding:14px 16px 16px;display:none;font-family:var(--sans);font-size:13px;line-height:1.55;color:#e7ebf0";
+  document.body.appendChild(_pop);
+  document.addEventListener("mousedown",e=>{ if(_pop && !_pop.contains(e.target) && e.target.tagName!=="path" && e.target.tagName!=="rect" && e.target.tagName!=="text") hidePop(); });
+  return _pop;
+}
+function showPop(html, ev){
+  const el=popEl(); el.innerHTML=`<button style="position:absolute;top:8px;right:10px;background:none;border:0;color:#8b95a6;font-size:16px;cursor:pointer" onclick="this.parentElement.style.display='none'">×</button>`+html;
+  el.style.display="block";
+  const px=Math.min((ev?ev.clientX:120)+14, window.innerWidth-el.offsetWidth-16);
+  const py=Math.min((ev?ev.clientY:120)+10, window.innerHeight-el.offsetHeight-16);
+  el.style.left=Math.max(12,px)+"px"; el.style.top=Math.max(12,py)+"px";
+}
+function hidePop(){ if(_pop)_pop.style.display="none"; }
+
+function survBlock(move,label){
+  if(!move) return "";
+  const arrow = move.after<move.before ? "▼" : (move.after>move.before?"▲":"→");
+  const col = move.after<move.before ? "#f87171" : "#4ade80";
+  return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #272d38">
+    <div style="color:#5b6472;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Argument survival ${label||""}</div>
+    <div style="font-family:var(--mono);font-size:13px;margin-top:3px">
+      ${move.before.toFixed(2)} <span style="color:${col}">${arrow}</span> ${move.after.toFixed(2)}
+      <span style="color:#5b6472;font-size:11px">(this rebuttal reduced the target's standing)</span></div></div>`;
+}
+function gEdgePopup(r, move, ev){
+  const col=G_COLORS[r.attack_type]||G_COLORS.unscored, eff=r.effectiveness;
+  showPop(`
+    <div style="color:#5b6472;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Rebuttal · Turn ${r.from.turn} (${r.from.speaker}) → Turn ${r.target.turn} (${r.target.speaker})</div>
+    <div style="color:#5b6472;font-size:10px;text-transform:uppercase;margin-top:10px">Rebutting sentence</div>
+    <div style="background:#1b2029;border-left:3px solid var(--accent);padding:8px 10px;border-radius:4px;font-family:var(--mono);font-size:12.5px;margin-top:3px;white-space:normal;word-break:break-word">${gEsc(r.from.sentence)}</div>
+    <div style="color:#5b6472;font-size:10px;text-transform:uppercase;margin-top:10px">Target (${r.target.kind})</div>
+    <div style="background:#1b2029;border-left:3px solid ${col};padding:8px 10px;border-radius:4px;font-family:var(--mono);font-size:12.5px;margin-top:3px;white-space:normal;word-break:break-word">${gEsc(r.target.text)}</div>
+    <div style="margin-top:10px"><span style="background:${col};color:#0d0f13;font-weight:700;padding:2px 8px;border-radius:5px;font-size:11px;font-family:var(--mono)">${G_LABEL[r.attack_type]||"unscored"}${r.is_counterexample?" · counterexample":""}</span>
+      ${eff?`<span style="color:#8b95a6;font-size:11px;font-family:var(--mono)"> effectiveness ${eff}/3 · ${EFF_WORD[eff]||""}</span>`:'<span style="color:#5b6472;font-size:11px"> NLI screen only — not judged</span>'}</div>
+    ${r.rationale?`<div style="color:#8b95a6;font-size:12px;margin-top:8px;line-height:1.5">${gEsc(r.rationale)}</div>`:""}
+    <div style="color:#5b6472;font-size:10.5px;margin-top:9px;font-family:var(--mono)">NLI contradiction ${(r.nli_contradiction??0).toFixed(2)} <span style="font-family:var(--sans)">— screen value only, never a score</span></div>`, ev);
+}
+function gNodePopup(t,list,sv,ev){
+  const head=`<div style="color:#5b6472;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Turn ${t.turn} · ${t.speaker}</div>
+    <div style="background:#1b2029;padding:8px 10px;border-radius:4px;font-family:var(--mono);font-size:12.5px;margin-top:6px;white-space:normal;word-break:break-word">${gEsc(t.claim||t.text||"(no claim)")}</div>
+    ${sv?`<div style="margin-top:8px;font-family:var(--mono);font-size:12px">status <b style="color:${SURV_COLOR[sv.status]||"#5b6472"}">${sv.status}</b>${sv.defended?" · owner answered the attacker":""}</div>`:""}`;
+  const rows=list.length?list.map(r=>{const col=G_COLORS[r.attack_type]||G_COLORS.unscored,dir=r.from.turn===t.turn?"→ attacks Turn "+r.target.turn:"← attacked by Turn "+r.from.turn;
+    return `<div style="margin-top:8px"><span style="background:${col};color:#0d0f13;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">${G_LABEL[r.attack_type]||"unscored"}${r.is_counterexample?" · counterexample":""}</span> ${dir} · eff ${r.effectiveness??"?"}/3
+      <div style="background:#1b2029;border-left:3px solid var(--accent);padding:6px 9px;border-radius:4px;font-family:var(--mono);font-size:12px;margin-top:4px;white-space:normal;word-break:break-word">${gEsc(r.from.turn===t.turn?r.from.sentence:r.target.text)}</div></div>`;}).join(""):'<div style="color:#5b6472;margin-top:8px">No rebuttals in or out of this turn.</div>';
+  showPop(head+`<div style="margin-top:10px;color:#5b6472;font-size:10px;text-transform:uppercase">${list.length} link(s)</div>`+rows, ev);
+}
+
+// ── hover tooltip (small, follows cursor) ───────────────────────────────────
+let _tip=null;
+function gTip(txt,ev){
+  if(!_tip){_tip=document.createElement("div");_tip.style.cssText="position:fixed;z-index:9998;pointer-events:none;background:#0c0e12;border:1px solid #363c49;color:#e7ebf0;font-size:12px;padding:5px 9px;border-radius:6px;max-width:340px;line-height:1.4";document.body.appendChild(_tip);}
+  _tip.textContent=txt;_tip.style.display="block";
+  _tip.style.left=Math.min(ev.clientX+12,window.innerWidth-_tip.offsetWidth-12)+"px";
+  _tip.style.top=(ev.clientY+14)+"px";
+}
+function gTipHide(){ if(_tip)_tip.style.display="none"; }
+
+function showGraphControls(on){document.getElementById("viewGraph").style.display=on?"inline-block":"none";document.getElementById("viewJson").style.display=on?"inline-block":"none";if(!on)hidePop();}
+function setResponseMode(mode){
+  const out=document.getElementById("out"),gh=document.getElementById("graphhost");
+  if(mode==="graph"){out.style.display="none";gh.style.display="block";
+    if(window.__lastGraph)drawRebuttalGraph(gh,window.__lastGraph.result,window.__lastGraph.turns,window.__lastGraph.survival);}
+  else{out.style.display="block";gh.style.display="none";hidePop();}
+}
+document.getElementById("viewGraph").addEventListener("click",()=>setResponseMode("graph"));
+document.getElementById("viewJson").addEventListener("click",()=>setResponseMode("json"));
+
+select(METRICS[0].id);
+pingHealth();
+setInterval(pingHealth, 15000);
+</script>
+</body>
+</html>

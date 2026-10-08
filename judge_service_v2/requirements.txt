@@ -1,0 +1,26 @@
+# Debate Judge v2: Python dependencies
+# Install from the repository root:
+#     pip install -r judge_service_v2/requirements.txt
+# Tested with Python 3.13 on Windows (CPU only).
+
+# Web service
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+python-dotenv>=1.0       # optional .env support (utils/judge_config.py)
+requests>=2.31           # Ollama and Elasticsearch clients
+
+# Scoring models
+torch>=2.2               # CPU is enough; a GPU only makes it faster
+transformers>=4.40       # DeBERTa-v3 NLI (stance support, consistency, rebuttal screening)
+numpy>=1.24
+
+# Optional: only for validation/ (Dagstuhl corpus agreement scripts)
+# scipy>=1.11
+# pandas>=2.0
+
+# Runtime services (not pip packages):
+#   Ollama  - needed for the LLM-based metrics (cogency, rebuttal rating, winner reasoning,
+#             topic hypotheses). Install from https://ollama.com, then `ollama pull qwen2.5:7b`.
+#   ES_API  - optional reference-argument search used by Delta/Votes; without it those
+#             metrics report "not applicable".

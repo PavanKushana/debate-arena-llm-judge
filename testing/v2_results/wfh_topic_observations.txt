@@ -1,0 +1,511 @@
+Working from home is better than working in an office
+
+turn 1
+
+stance support
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "Working from home (WFH) offers several advantages over traditional office work, making it a better choice for many. Firstly, it enhances work-life balance. Employees can manage their personal and professional lives more effectively, reducing the stress of commuting and rigid office hours. Secondly, it increases productivity. Many studies have shown that remote workers tend to be more productive because they can eliminate distractions and customize their work environment to suit their needs. Thirdly, it promotes environmental sustainability by reducing carbon emissions from commuting and by enabling the use of energy-efficient home office setups. Lastly, it offers greater flexibility, allowing employees to manage their schedules around family commitments or health needs, thus improving overall well-being and job satisfaction.",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9952,
+  "net_stance": 0.9941,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.9952,
+    "neutral": 0.0037,
+    "contradiction": 0.0011
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "Working from home (WFH) offers several advantages over traditional office work, making it a better choice for many. Firstly, it enhances work-life balance. Employees can manage their personal and professional lives more effectively, reducing the stress of commuting and rigid office hours. Secondly, it increases productivity. Many studies have shown that remote workers tend to be more productive because they can eliminate distractions and customize their work environment to suit their needs. Thirdly, it promotes environmental sustainability by reducing carbon emissions from commuting and by enabling the use of energy-efficient home office setups. Lastly, it offers greater flexibility, allowing employees to manage their schedules around family commitments or health needs, thus improving overall well-being and job satisfaction..",
+  "stance": "PRO",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+logical cogency
+
+{
+  "stance_support_score": 0.9945,
+  "net_stance": 0.9928,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.9945,
+  "con_score": 0.0017,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.9945,
+    "neutral": 0.0041,
+    "contradiction": 0.0014
+  },
+  "con_probs": {
+    "entailment": 0.0017,
+    "neutral": 0.0015,
+    "contradiction": 0.9967
+  }
+}
+
+logical cogency
+
+{
+"claim": "Working from home is a better choice than traditional office work for many people.",
+"premises": [
+"Working from home enhances work-life balance by allowing employees to manage their personal and professional lives more effectively and reducing the stress of commuting and rigid office hours.",
+"Working from home can increase productivity because remote workers can eliminate distractions and customize their work environment.",
+"Working from home promotes environmental sustainability by reducing commuting emissions and enabling energy-efficient home office setups.",
+"Working from home offers greater flexibility around family commitments or health needs, improving well-being and job satisfaction."
+],
+"use_llm_sufficiency": false,
+"prior_claims": null,
+"model": "qwen3.6:27b"
+}
+
+{ "cogency_score": 0.2062, "label": "LOW", "acceptability": 0.9998, "relevance": 0.008, "sufficiency": 0.0077, "sufficiency_method": "nli_fallback", "has_reasons": true, "nli_probs": { "entailment": 0.0077, "neutral": 0.992, "contradiction": 0.0002 }, "weights": { "acceptability": 0.2, "relevance": 0.35, "sufficiency": 0.45, "_calibrated": false } }
+
+turn 2
+
+stance support
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While working from home does offer some advantages, it is not universally superior to working in an office. The lack of face-to-face interaction can lead to reduced collaboration and communication, which are crucial for complex projects and innovation. Office environments also provide a structured setting that can help maintain discipline and focus, especially for individuals who might struggle with self-motivation at home. Additionally, the physical separation from colleagues can make it harder to build rapport and trust, which are essential for teamwork and organizational culture. Lastly, the environmental benefits of WFH are often overstated, as the energy use and emissions from home offices can vary widely depending on the individual's setup and habits. Overall, while WFH has its merits, it is not always the optimal choice for",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.1398,
+  "net_stance": -0.6787,
+  "label": "LOW",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.8185,
+    "neutral": 0.0417,
+    "contradiction": 0.1398
+  }
+}
+
+
+score of entailment reduced if we remove incomplete argument
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While working from home does offer some advantages, it is not universally superior to working in an office. The lack of face-to-face interaction can lead to reduced collaboration and communication, which are crucial for complex projects and innovation. Office environments also provide a structured setting that can help maintain discipline and focus, especially for individuals who might struggle with self-motivation at home. Additionally, the physical separation from colleagues can make it harder to build rapport and trust, which are essential for teamwork and organizational culture. Lastly, the environmental benefits of WFH are often overstated, as the energy use and emissions from home offices can vary widely depending on the individual's setup and habits.",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.8348,
+  "net_stance": 0.8178,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.017,
+    "neutral": 0.1481,
+    "contradiction": 0.8348
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While working from home does offer some advantages, it is not universally superior to working in an office. The lack of face-to-face interaction can lead to reduced collaboration and communication, which are crucial for complex projects and innovation. Office environments also provide a structured setting that can help maintain discipline and focus, especially for individuals who might struggle with self-motivation at home. Additionally, the physical separation from colleagues can make it harder to build rapport and trust, which are essential for teamwork and organizational culture. Lastly, the environmental benefits of WFH are often overstated, as the energy use and emissions from home offices can vary widely depending on the individual's setup and habits. Overall, while WFH has its merits, it is not always the optimal choice for",
+  "stance": "CON",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+{
+  "stance_support_score": 0.9988,
+  "net_stance": 0.1802,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.8185,
+  "con_score": 0.9988,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.8185,
+    "neutral": 0.0417,
+    "contradiction": 0.1398
+  },
+  "con_probs": {
+    "entailment": 0.9988,
+    "neutral": 0.0008,
+    "contradiction": 0.0004
+  }
+}
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While working from home does offer some advantages, it is not universally superior to working in an office. The lack of face-to-face interaction can lead to reduced collaboration and communication, which are crucial for complex projects and innovation. Office environments also provide a structured setting that can help maintain discipline and focus, especially for individuals who might struggle with self-motivation at home. Additionally, the physical separation from colleagues can make it harder to build rapport and trust, which are essential for teamwork and organizational culture. Lastly, the environmental benefits of WFH are often overstated, as the energy use and emissions from home offices can vary widely depending on the individual's setup and habits.",
+  "stance": "CON",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+{
+  "stance_support_score": 0.9939,
+  "net_stance": 0.9768,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.017,
+  "con_score": 0.9939,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.017,
+    "neutral": 0.1481,
+    "contradiction": 0.8348
+  },
+  "con_probs": {
+    "entailment": 0.9939,
+    "neutral": 0.0031,
+    "contradiction": 0.003
+  }
+}
+
+logical cogency
+
+{
+  "claim": "Working from home is not universally superior to working in an office.",
+  "premises": [
+    "The lack of face-to-face interaction can reduce collaboration and communication, which are important for complex projects and innovation.",
+            "Office environments provide structure that can help maintain discipline and focus, especially for people who struggle with self-motivation at home.",
+            "Physical separation from colleagues can make it harder to build rapport and trust, which are important for teamwork and organizational culture.",
+            "The environmental benefits of working from home may be overstated because home-office energy use and emissions vary depending on individual setups and habits."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "qwen3.6:27b"
+}
+
+{
+  "cogency_score": 0.9968,
+  "label": "HIGH",
+  "acceptability": 0.9997,
+  "relevance": 0.9963,
+  "sufficiency": 0.9959,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9959,
+    "neutral": 0.0037,
+    "contradiction": 0.0003
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+turn 3
+
+stance support
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "However, the lack of in-person interaction can be mitigated through advanced communication tools that enable real-time collaboration and foster a sense of community. Furthermore, the structured environment of an office is beneficial for some, but it can also be overly rigid for others who thrive in a more flexible setting. The key is adaptability: offering hybrid work models that combine the best of both worlds. Moreover, the environmental benefits of WFH are significant, especially when considering the long-term reduction in commuting and the potential for more sustainable home office practices. The variability in energy use is true, but the overall trend toward more energy-efficient home office setups and the reduction in commuting emissions support a greener future. Therefore, while in-person interaction is valuable, the flexibility and environmental",
+  "stance": "PRO",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.9267,
+  "net_stance": 0.8777,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.9267,
+    "neutral": 0.0243,
+    "contradiction": 0.049
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "However, the lack of in-person interaction can be mitigated through advanced communication tools that enable real-time collaboration and foster a sense of community. Furthermore, the structured environment of an office is beneficial for some, but it can also be overly rigid for others who thrive in a more flexible setting. The key is adaptability: offering hybrid work models that combine the best of both worlds. Moreover, the environmental benefits of WFH are significant, especially when considering the long-term reduction in commuting and the potential for more sustainable home office practices. The variability in energy use is true, but the overall trend toward more energy-efficient home office setups and the reduction in commuting emissions support a greener future. Therefore, while in-person interaction is valuable, the flexibility and environmental",
+  "stance": "PRO",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+{
+  "stance_support_score": 0.9267,
+  "net_stance": 0.9191,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "PRO",
+  "interpret": "dual",
+  "pro_score": 0.9267,
+  "con_score": 0.0076,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.9267,
+    "neutral": 0.0243,
+    "contradiction": 0.049
+  },
+  "con_probs": {
+    "entailment": 0.0076,
+    "neutral": 0.0069,
+    "contradiction": 0.9855
+  }
+}
+
+logical cogency
+
+{
+  "claim": "The advantages of flexible and remote work can outweigh the disadvantages associated with reduced in-person interaction.",
+  "premises": [
+    "Advanced communication tools can mitigate the lack of in-person interaction by enabling real-time collaboration and fostering a sense of community.",
+            "A structured office environment can be overly rigid for people who perform better in flexible settings.",
+            "Hybrid work models can combine the benefits of office work and remote work.",
+            "Working from home can provide significant environmental benefits through reduced commuting and more sustainable home-office practices.",
+            "More energy-efficient home-office setups and reduced commuting emissions support a greener future."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "qwen3.6:27b"
+}
+
+
+{
+  "cogency_score": 0.994,
+  "label": "HIGH",
+  "acceptability": 0.9992,
+  "relevance": 0.9932,
+  "sufficiency": 0.9924,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9924,
+    "neutral": 0.0068,
+    "contradiction": 0.0008
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+turn 4
+
+stance support
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While advanced communication tools can bridge the gap in interaction, they cannot fully replicate the spontaneous and nuanced exchanges that occur in person. These tools often lack the non-verbal cues and immediate feedback that are crucial for deep collaboration and innovation. Additionally, the flexibility of WFH can lead to a lack of defined boundaries, making it difficult to separate work from personal life, which can negatively impact mental health and overall well-being. The structured environment of an office, while potentially rigid, provides a clear framework that can enhance productivity and maintain professional standards. Lastly, the environmental benefits of WFH are not as straightforward as they seem; the energy savings from reduced commuting can be offset by the potential for higher energy use in home offices, especially if employees rely on air conditioning",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.1087,
+  "net_stance": 0.0975,
+  "label": "LOW",
+  "off_topic": true,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.0112,
+    "neutral": 0.8801,
+    "contradiction": 0.1087
+  }
+}
+
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While advanced communication tools can bridge the gap in interaction, they cannot fully replicate the spontaneous and nuanced exchanges that occur in person. These tools often lack the non-verbal cues and immediate feedback that are crucial for deep collaboration and innovation. Additionally, the flexibility of WFH can lead to a lack of defined boundaries, making it difficult to separate work from personal life, which can negatively impact mental health and overall well-being. The structured environment of an office, while potentially rigid, provides a clear framework that can enhance productivity and maintain professional standards.",
+  "stance": "CON",
+  "interpret": "affirmative"
+}
+
+{
+  "stance_support_score": 0.0952,
+  "net_stance": 0.0704,
+  "label": "LOW",
+  "off_topic": true,
+  "stance": "CON",
+  "interpret": "affirmative",
+  "hypothesis": "Working from home is better than working in an office.",
+  "probs": {
+    "entailment": 0.0248,
+    "neutral": 0.88,
+    "contradiction": 0.0952
+  }
+}
+
+stance support dual
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While advanced communication tools can bridge the gap in interaction, they cannot fully replicate the spontaneous and nuanced exchanges that occur in person. These tools often lack the non-verbal cues and immediate feedback that are crucial for deep collaboration and innovation. Additionally, the flexibility of WFH can lead to a lack of defined boundaries, making it difficult to separate work from personal life, which can negatively impact mental health and overall well-being. The structured environment of an office, while potentially rigid, provides a clear framework that can enhance productivity and maintain professional standards. Lastly, the environmental benefits of WFH are not as straightforward as they seem; the energy savings from reduced commuting can be offset by the potential for higher energy use in home offices, especially if employees rely on air conditioning",
+  "stance": "CON",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+{
+  "stance_support_score": 0.8838,
+  "net_stance": 0.8726,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.0112,
+  "con_score": 0.8838,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.0112,
+    "neutral": 0.8801,
+    "contradiction": 0.1087
+  },
+  "con_probs": {
+    "entailment": 0.8838,
+    "neutral": 0.1117,
+    "contradiction": 0.0045
+  }
+}
+
+{
+  "topic": "Working from home is better than working in an office.",
+  "turn": "While advanced communication tools can bridge the gap in interaction, they cannot fully replicate the spontaneous and nuanced exchanges that occur in person. These tools often lack the non-verbal cues and immediate feedback that are crucial for deep collaboration and innovation. Additionally, the flexibility of WFH can lead to a lack of defined boundaries, making it difficult to separate work from personal life, which can negatively impact mental health and overall well-being. The structured environment of an office, while potentially rigid, provides a clear framework that can enhance productivity and maintain professional standards.",
+  "stance": "CON",
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office."
+}
+
+{
+  "stance_support_score": 0.9307,
+  "net_stance": 0.9059,
+  "label": "HIGH",
+  "off_topic": false,
+  "stance": "CON",
+  "interpret": "dual",
+  "pro_score": 0.0248,
+  "con_score": 0.9307,
+  "pro_hypothesis": "Working from home is better than working in an office.",
+  "con_hypothesis": "Working from home not better than working in an office.",
+  "pro_probs": {
+    "entailment": 0.0248,
+    "neutral": 0.88,
+    "contradiction": 0.0952
+  },
+  "con_probs": {
+    "entailment": 0.9307,
+    "neutral": 0.0555,
+    "contradiction": 0.0138
+  }
+}
+
+logical cogency
+
+{
+  "claim": "Working from home has significant disadvantages that prevent it from being clearly better than office work.",
+  "premises": [
+    "Communication tools cannot fully replicate spontaneous and nuanced in-person exchanges.",
+            "Remote communication tools often lack non-verbal cues and immediate feedback that are important for deep collaboration and innovation.",
+            "The flexibility of working from home can blur boundaries between work and personal life, negatively affecting mental health and well-being.",
+            "The structured environment of an office can enhance productivity and maintain professional standards.",
+            "Environmental savings from reduced commuting can be offset by higher energy consumption in home offices."
+  ],
+  "use_llm_sufficiency": false,
+  "prior_claims": null,
+  "model": "qwen3.6:27b"
+}
+
+{
+  "cogency_score": 0.9795,
+  "label": "HIGH",
+  "acceptability": 0.9913,
+  "relevance": 0.9814,
+  "sufficiency": 0.9727,
+  "sufficiency_method": "nli_fallback",
+  "has_reasons": true,
+  "nli_probs": {
+    "entailment": 0.9727,
+    "neutral": 0.0186,
+    "contradiction": 0.0087
+  },
+  "weights": {
+    "acceptability": 0.2,
+    "relevance": 0.35,
+    "sufficiency": 0.45,
+    "_calibrated": false
+  }
+}
+
+pro consistency
+
+{
+  "claim": "The advantages of flexible and remote work can outweigh the disadvantages associated with reduced in-person interaction.",
+  "prior_claims": [
+    "Working from home is a better choice than traditional office work for many people"
+  ]
+}
+
+{
+  "consistency_score": 0.9996,
+  "max_contradiction": 0.0004,
+  "conflicting_prior": "Working from home is a better choice than traditional office work for many people",
+  "inconsistent": false,
+  "n_priors": 1
+}
+
+con consistency
+
+{
+  "claim": "Working from home has significant disadvantages that prevent it from being clearly better than office work.",
+  "prior_claims": [
+    "Working from home is not universally superior to working in an office."
+  ]
+}
+
+{
+  "consistency_score": 0.9994,
+  "max_contradiction": 0.0006,
+  "conflicting_prior": "Working from home is not universally superior to working in an office.",
+  "inconsistent": false,
+  "n_priors": 1
+}
